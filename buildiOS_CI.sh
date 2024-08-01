@@ -1,91 +1,12 @@
 #!/bin/bash
 
-# Update submodules
-echo "-- Updating submodules --"
-git submodule update --init --recursive
-
-# Dependencies
-echo "-- Making ssl-curl folder --"
-mkdir openssl_curl_for_ios_android.20170105
-
-echo "-- Moving into the new folder --"
-cd openssl_curl_for_ios_android.20170105
-
-echo "-- Downloading a pre-built version of the ssl-curl lib --"
-curl -L -o file.zip https://github.com/leenjewel/openssl_for_ios_and_android/releases/download/20170105/openssl_curl_for_ios_android.20170105.zip
-
-echo "-- Unzipping the downloaded zip file --"
-tar -xf file.zip
-
-echo "-- Moving back to previous folder --"
-cd ..
-
-# AWSSDKCPP build
-
-# Based on build scripts from the following:
-# https://github.com/aws/aws-sdk-cpp/issues/340 
-# https://github.com/mologie/libtomcrypt-ios
-# http://stackoverflow.com/a/27161949/5148626
-
-# ------------------------------
-#           README FIRST
-# ------------------------------
-#           DEPENDENCY
-# - Need to build libcurl for iOS
-# -- see project: https://github.com/gcesarmza/curl-android-ios
-# -- Update to latest release of curl if necessary (run git clone https://github.com/curl/curl.git from inside this project)
-# -- Before running the build script located in "curl-compile-scripts/build_iOS.h",
-#    - Go to line containing .configure command
-#      - add option "--without-zlib" to .configure command,
-#      - make sure it has option "--with-darwinssl",
-#      - and then run the build script
-#
-# ------------------------------
-# Create DIR structure as follows
-# ------------------------------
-#
-#  Workspace_dir    // name this whatever you like
-#  |
-#   -- aws-sdk-cpp  // Source dir
-#  |
-#   -- build
-#  |   |
-#  |    -- build.sh // (this script)
-#  |
-#  |-- buildOutput      // Automatically created. Will contain output
-#  |
-#  |-- aggregatedOutput // Automatically created. Will contain aggregated output (if last line is un-commented)
-#  |
-#   -- libcurl
-#      |
-#       -- lib/libcurl.a      // Note: This should contain a fatlib to support building arm64, armv7, armv7s
-#      |
-#       -- include/..         // libcurl headers
-#
-# ------------------------------
-# Usage: Once libcurl is built/available place it in "libcurl" directory as shown above. Then:
-#        1. Update following parameters in the script below as required:
-#           - WORKSPACE - path to "Workspace_dir" mentioned above
-#           - SDK_VERSION - Currently Set to 10.3
-#           - MIN_VERSION - Currently Set to 10.0
-#           - AWS cmake arguments as necessary in build_AWSRelease_bitcode() function.
-#             Note: To disable bitcode, remove "-fembed-bitcode" from CMAKE_CXX_FLAGS
-#
-#           - If you want to aggregate build outputs into a fat lib, see function aggregate_libs()
-#               - Add the necessary libraries in the components array
-#               - uncomment last line: aggregate_libs "${WORKSPACE}/aggregatedOutput"
-#
-#        2. Place the build script in "Workspace_dir/build"
-#
-#        3. Run the following in terminal:
-#               cd Workspace_dir/build
-#               ./build.sh
-#
-# Output should be in Workspace_dir/buildOutput, if everything went well
-# Aggregated lib should be in Workspace_dir/aggregatedOutput, if everything went well
-# ------------------------------
-
+# set -euo pipefail
+# set -eo pipefail
+set -o pipefail
 set -x
+
+## Openssl_curl done previously
+# cd openssl_curl_for_ios_android.20170105
 
 # SDK Version
 SDK_VERSION="17.2"
@@ -128,8 +49,6 @@ if [ ! -d "$IPHONESIMULATOR_SDK" ]; then
 fi
 
 
-pwd=`pwd`
-
 # ----------------------------------
 # To build arm64, armv7, armv7s
 # ----------------------------------
@@ -140,8 +59,8 @@ build_AWSRelease_bitcode()
 	export BUILD_FOLDER=build/iOS-$ARCH-$DBGREL
 
     # Build intermediates dir
-    mkdir -p $BUILD_FOLDER
-    cd $BUILD_FOLDER
+    mkdir -p "$BUILD_FOLDER"
+    cd "$BUILD_FOLDER"
 
     # Cleanup
     rm -r ./*
@@ -157,13 +76,13 @@ build_AWSRelease_bitcode()
     export LDFLAGS="-arch ${ARCH} -isysroot $SDK"
 
     BUILD_OUTPUT="${WORKSPACE}/output/iOS/${ARCH}/${DBGREL}"
-    mkdir -p $BUILD_OUTPUT
+    mkdir -p "$BUILD_OUTPUT"
 
-    echo $CMAKE_CXX_FLAGS
+    echo "$CMAKE_CXX_FLAGS"
 
     cmake -Wno-dev \
         -DCMAKE_OSX_SYSROOT="$IPHONEOS_SDK" \
-        -DCMAKE_OSX_ARCHITECTURES=$ARCH \
+        -DCMAKE_OSX_ARCHITECTURES="$ARCH" \
         -DCMAKE_SYSTEM_NAME="Darwin" \
 		-DENABLE_TESTING=0 \
 		-DBUILD_ONLY="kinesis;cognito-identity;cognito-sync;lambda;s3;apigateway;identity-management" \
@@ -182,7 +101,7 @@ build_AWSRelease_bitcode()
 		-DENABLE_CURL_CLIENT=Yes \
 		-DCURL_INCLUDE_DIR=${WORKSPACE}/openssl_curl_for_ios_android.20170105/output/ios/curl-ios-$ARCH/include \
 		-DCURL_LIBRARY=${WORKSPACE}/openssl_curl_for_ios_android.20170105/output/ios/curl-ios-$ARCH/lib/libcurl.a \
-		-DCMAKE_IOS_DEPLOYMENT_TARGET=“12” \
+		-DCMAKE_IOS_DEPLOYMENT_TARGET="12" \
 		-DENABLE_OPENSSL_ENCRYPTION=Yes \
 		-DOPENSSL_CRYPTO_LIBRARY=${WORKSPACE}/openssl_curl_for_ios_android.20170105/output/ios/openssl-ios-$ARCH/lib/libcrypto.a \
 		-DOPENSSL_SSL_LIBRARY=${WORKSPACE}/openssl_curl_for_ios_android.20170105/output/ios/openssl-ios-$ARCH/lib/libssl.a \
@@ -207,8 +126,8 @@ build_AWSDebug_bitcode()
 	export BUILD_FOLDER=build/iOS-$ARCH-$DBGREL
 
     # Build intermediates dir
-    mkdir -p $BUILD_FOLDER
-    cd $BUILD_FOLDER
+    mkdir -p "$BUILD_FOLDER"
+    cd "$BUILD_FOLDER"
 
     # Cleanup
     rm -r ./*
@@ -224,13 +143,13 @@ build_AWSDebug_bitcode()
     export LDFLAGS="-arch ${ARCH} -isysroot $SDK"
 
     BUILD_OUTPUT="${WORKSPACE}/output/iOS/${ARCH}/${DBGREL}"
-    mkdir -p $BUILD_OUTPUT
+    mkdir -p "$BUILD_OUTPUT"
 
-    echo $CMAKE_CXX_FLAGS
+    echo "$CMAKE_CXX_FLAGS"
 
     cmake -Wno-dev \
         -DCMAKE_OSX_SYSROOT="$IPHONEOS_SDK" \
-        -DCMAKE_OSX_ARCHITECTURES=$ARCH \
+        -DCMAKE_OSX_ARCHITECTURES="$ARCH" \
         -DCMAKE_SYSTEM_NAME="Darwin" \
 		-DENABLE_TESTING=0 \
 		-DBUILD_ONLY="kinesis;cognito-identity;cognito-sync;lambda;s3;apigateway;identity-management" \
@@ -264,8 +183,8 @@ build_AWSRelease_Simulator_bitcode()
 	export BUILD_FOLDER=build/iOS-$ARCH-$DBGREL
 
     # Build intermediates dir
-    mkdir -p $BUILD_FOLDER
-    cd $BUILD_FOLDER
+    mkdir -p "$BUILD_FOLDER"
+    cd "$BUILD_FOLDER"
 
     # Cleanup
     rm -r ./*
@@ -281,13 +200,13 @@ build_AWSRelease_Simulator_bitcode()
     export LDFLAGS="-arch ${ARCH} -isysroot $SDK"
 
     BUILD_OUTPUT="${WORKSPACE}/output/iOS/${ARCH}/${DBGREL}"
-    mkdir -p $BUILD_OUTPUT
+    mkdir -p "$BUILD_OUTPUT"
 
-    echo $CMAKE_CXX_FLAGS
+    echo "$CMAKE_CXX_FLAGS"
 
     cmake -Wno-dev \
     -DCMAKE_OSX_SYSROOT=$IPHONESIMULATOR_SDK \
-    -DCMAKE_OSX_ARCHITECTURES=$ARCH \
+    -DCMAKE_OSX_ARCHITECTURES="$ARCH" \
     -DCMAKE_SYSTEM_NAME="Darwin" \
 	-DENABLE_TESTING=0 \
 	-DBUILD_ONLY="kinesis;cognito-identity;cognito-sync;lambda;s3;apigateway;identity-management" \
@@ -306,7 +225,7 @@ build_AWSRelease_Simulator_bitcode()
 	-DENABLE_CURL_CLIENT=Yes \
 	-DCURL_INCLUDE_DIR=${WORKSPACE}/openssl_curl_for_ios_android.20170105/output/ios/curl-ios-$ARCH/include \
 	-DCURL_LIBRARY=${WORKSPACE}/openssl_curl_for_ios_android.20170105/output/ios/curl-ios-$ARCH/lib/libcurl.a \
-	-DCMAKE_IOS_DEPLOYMENT_TARGET=“12” \
+	-DCMAKE_IOS_DEPLOYMENT_TARGET="12" \
 	-DENABLE_OPENSSL_ENCRYPTION=Yes \
 	-DOPENSSL_CRYPTO_LIBRARY=${WORKSPACE}/openssl_curl_for_ios_android.20170105/output/ios/openssl-ios-$ARCH/lib/libcrypto.a \
 	-DOPENSSL_SSL_LIBRARY=${WORKSPACE}/openssl_curl_for_ios_android.20170105/output/ios/openssl-ios-$ARCH/lib/libssl.a \
@@ -331,8 +250,8 @@ build_AWSDebug_Simulator_bitcode()
 	export BUILD_FOLDER=build/iOS-$ARCH-$DBGREL
 
     # Build intermediates dir
-    mkdir -p $BUILD_FOLDER
-    cd $BUILD_FOLDER
+    mkdir -p "$BUILD_FOLDER"
+    cd "$BUILD_FOLDER"
 
     # Cleanup
     rm -r ./*
@@ -348,9 +267,9 @@ build_AWSDebug_Simulator_bitcode()
     export LDFLAGS="-arch ${ARCH} -isysroot $SDK"
 
     BUILD_OUTPUT="${WORKSPACE}/output/iOS/${ARCH}/${DBGREL}"
-    mkdir -p $BUILD_OUTPUT
+    mkdir -p "$BUILD_OUTPUT"
 
-    echo $CMAKE_CXX_FLAGS
+    echo "$CMAKE_CXX_FLAGS"
 
     cmake -Wno-dev \
     -DCMAKE_OSX_SYSROOT=$IPHONESIMULATOR_SDK \
@@ -384,8 +303,8 @@ aggregate_release_libs() {
 	export DBGREL="Release"
 
     # Aggregate library and include files
-    mkdir -p ${AGG_OUTPUT_DIR}/include
-    mkdir -p ${AGG_OUTPUT_DIR}/lib
+    mkdir -p "${AGG_OUTPUT_DIR}/include"
+    mkdir -p "${AGG_OUTPUT_DIR}/lib"
 
     cp -r ${WORKSPACE}/output/iOS/arm64/${DBGREL}/include/* ${AGG_OUTPUT_DIR}/include/
 
@@ -483,6 +402,7 @@ aggregate_debug_libs() {
     echo "--------------------------------------------------"
 }
 
+
 ## Build release configuration
 build_AWSRelease_bitcode "arm64" "${IPHONEOS_SDK}"
 build_AWSRelease_bitcode "armv7" "${IPHONEOS_SDK}"
@@ -502,21 +422,4 @@ aggregate_release_libs "${WORKSPACE}/output/iOS/fatlib/release"
 #aggregate_debug_libs "${WORKSPACE}/output/iOS/fatlib/debug"
 
 echo "-- Initial AWSSDKCPP build complete --"
-
-echo "-- zipping output --"
-mkdir zipOutput
-rm zipOutput/AWSSDKCPP.zip
-mv output AWSSDKCPP
-zip -r zipOutput/AWSSDKCPP.zip AWSSDKCPP
-mv AWSSDKCPP output
-echo "-- create openssl curl zip file --"
-rm zipOutput/libcurl.zip
-cd openssl_curl_for_ios_android.20170105
-mv output libcurl
-zip -r ../zipOutput/libcurl.zip libcurl
-mv libcurl output
-cd ..
-echo "-- done --"
-
-
 
