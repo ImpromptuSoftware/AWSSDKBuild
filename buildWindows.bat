@@ -3,9 +3,10 @@ SETLOCAL EnableDelayedExpansion
 mkdir output
 set curDir=%CD:\=/%
 set outputPath=%curDir%/output/Windows
-set androidNDKPath=%curDir%/NDK/Windows/android-ndk-r19c
+set androidNDKPath=%curDir%/NDK/Windows/android-ndk-r21e
 
-call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\Tools\VsDevCmd.bat"
+REM call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\Tools\VsDevCmd.bat"
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\Tools\VsDevCmd.bat"
 
 rem ** CREATE WINDOWS DEBUG win32 **
 set winType=win32
