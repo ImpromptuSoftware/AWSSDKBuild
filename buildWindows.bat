@@ -11,12 +11,12 @@ call "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\Tools\V
 rem ** CREATE WINDOWS DEBUG win32 **
 set winType=win32
 set buildType=Debug
-call scripts/_buildWindows.bat
+rem call scripts/_buildWindows.bat
 
 rem ** CREATE WINDOWS RELEASE win32 **
 set winType=win32
 set buildType=Release
-call scripts/_buildWindows.bat
+rem call scripts/_buildWindows.bat
 
 rem ** CREATE WINDOWS DEBUG win64 **
 set winType=win64
@@ -29,5 +29,3 @@ set buildType=Release
 call scripts/_buildWindows.bat
 
 
-
-pause
