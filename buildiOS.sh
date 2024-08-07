@@ -6,19 +6,22 @@ echo "-- Updating submodules --"
 
 # Dependencies
 echo "-- Making ssl-curl folder --"
-mkdir openssl_curl_for_ios_android.20170105
+mkdir openssl_curl
 
 echo "-- Moving into the new folder --"
-cd openssl_curl_for_ios_android.20170105
+cd openssl_curl
 
-echo "-- Downloading a pre-built version of the ssl-curl lib --"
-curl -L -o file.zip https://github.com/leenjewel/openssl_for_ios_and_android/releases/download/20170105/openssl_curl_for_ios_android.20170105.zip
+echo "-- Downloading a pre-built version of the libcurl and openssl lib for iOS --"
+curl -L -o curl_openSSL_iOS.zip https://github.com/jasonacox/Build-OpenSSL-cURL/releases/download/v8.6.0/libcurl-8.6.0-openssl-3.0.13-nghttp2-1.60.0.tgz
 
 echo "-- Unzipping the downloaded zip file --"
-tar -xf file.zip
+tar -xf curl_openSSL_iOS.zip
 
 echo "-- Moving back to previous folder --"
 cd ..
+
+#echo "-- Exit early after downloads --"
+#exit 1
 
 # AWSSDKCPP build
 
@@ -180,13 +183,13 @@ build_AWSRelease_bitcode()
 		-DCMAKE_CXX_FLAGS=-O3 \
 		-DCPP_STANDARD=14 \
 		-DENABLE_CURL_CLIENT=Yes \
-		-DCURL_INCLUDE_DIR=${WORKSPACE}/openssl_curl_for_ios_android.20170105/output/ios/curl-ios-$ARCH/include \
-		-DCURL_LIBRARY=${WORKSPACE}/openssl_curl_for_ios_android.20170105/output/ios/curl-ios-$ARCH/lib/libcurl.a \
+		-DCURL_INCLUDE_DIR=${WORKSPACE}/openssl_curl/libcurl-8.6.0-openssl-3.0.13-nghttp2-1.60.0/include \
+		-DCURL_LIBRARY=${WORKSPACE}/openssl_curl/libcurl-8.6.0-openssl-3.0.13-nghttp2-1.60.0/lib/iOS/libcurl.a \
 		-DCMAKE_IOS_DEPLOYMENT_TARGET=“12” \
 		-DENABLE_OPENSSL_ENCRYPTION=Yes \
-		-DOPENSSL_CRYPTO_LIBRARY=${WORKSPACE}/openssl_curl_for_ios_android.20170105/output/ios/openssl-ios-$ARCH/lib/libcrypto.a \
-		-DOPENSSL_SSL_LIBRARY=${WORKSPACE}/openssl_curl_for_ios_android.20170105/output/ios/openssl-ios-$ARCH/lib/libssl.a \
-		-DOPENSSL_INCLUDE_DIR=${WORKSPACE}/openssl_curl_for_ios_android.20170105/output/ios/openssl-ios-$ARCH/include \
+		-DOPENSSL_CRYPTO_LIBRARY=${WORKSPACE}/openssl_curl/libcurl-8.6.0-openssl-3.0.13-nghttp2-1.60.0/lib/iOS/libcrypto.a \
+		-DOPENSSL_SSL_LIBRARY=${WORKSPACE}/openssl_curl/libcurl-8.6.0-openssl-3.0.13-nghttp2-1.60.0/lib/iOS/libssl.a \
+		-DOPENSSL_INCLUDE_DIR=${WORKSPACE}/openssl_curl/libcurl-8.6.0-openssl-3.0.13-nghttp2-1.60.0/include  \
         $WORKSPACE/aws-sdk-cpp
     make -j 8
     make install
