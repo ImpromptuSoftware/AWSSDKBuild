@@ -2,7 +2,7 @@
 
 # Update submodules
 echo "-- Updating submodules --"
-git submodule update --init --recursive
+# git submodule update --init --recursive
 
 # Dependencies
 echo "-- Making ssl-curl folder --"
@@ -89,7 +89,7 @@ set -x
 
 # SDK Version
 SDK_VERSION="17.2"
-MIN_VERSION="10.0"
+MIN_VERSION="13.0"
 
 # Setup paths
 # echo current directory is $(pwd)
@@ -485,10 +485,10 @@ aggregate_debug_libs() {
 
 ## Build release configuration
 build_AWSRelease_bitcode "arm64" "${IPHONEOS_SDK}"
-build_AWSRelease_bitcode "armv7" "${IPHONEOS_SDK}"
+#build_AWSRelease_bitcode "armv7" "${IPHONEOS_SDK}"
 #build_AWSRelease_bitcode "armv7s" "${IPHONEOS_SDK}"
 #build_AWSRelease_Simulator_bitcode "i386" "${IPHONESIMULATOR_SDK}"
-build_AWSRelease_Simulator_bitcode "x86_64" "${IPHONESIMULATOR_SDK}"
+#build_AWSRelease_Simulator_bitcode "x86_64" "${IPHONESIMULATOR_SDK}"
 
 ## Build debug configuration
 #build_AWSDebug_bitcode "arm64" "${IPHONEOS_SDK}"
@@ -498,10 +498,14 @@ build_AWSRelease_Simulator_bitcode "x86_64" "${IPHONESIMULATOR_SDK}"
 #build_AWSDebug_Simulator_bitcode "x86_64" "${IPHONESIMULATOR_SDK}"
 
 ## Aggregate into a fat lib. Argument provided here is the output directory
-aggregate_release_libs "${WORKSPACE}/output/iOS/fatlib/release"
+#aggregate_release_libs "${WORKSPACE}/output/iOS/fatlib/release"
 #aggregate_debug_libs "${WORKSPACE}/output/iOS/fatlib/debug"
 
 echo "-- Initial AWSSDKCPP build complete --"
+
+echo "-- EXIT OUT EARLY --"
+exit 1
+
 
 echo "-- zipping output --"
 mkdir zipOutput
