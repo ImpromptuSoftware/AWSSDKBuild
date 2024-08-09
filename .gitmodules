@@ -1,3 +1,3 @@
 [submodule "aws-sdk-cpp"]
 	path = aws-sdk-cpp
-	url = https://github.com/impromptuSoftware/aws-sdk-cpp.git
+	url = https://github.com/impromptuSoftware/iS-aws-sdk-cpp.git
