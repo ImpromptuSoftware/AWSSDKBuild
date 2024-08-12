@@ -3,7 +3,7 @@
 # set -euo pipefail
 set -eo pipefail
 # set -o pipefail
-# set -x
+set -x
 
 # Update submodules
 echo "-- Updating submodules --"
@@ -11,7 +11,7 @@ echo "-- Updating submodules --"
 
 # Dependencies
 echo "-- Making ssl-curl folder --"
-mkdir openssl_curl
+mkdir -p openssl_curl
 
 echo "-- Moving into the new folder --"
 cd openssl_curl
@@ -93,6 +93,9 @@ cd ..
 # Aggregated lib should be in Workspace_dir/aggregatedOutput, if everything went well
 # ------------------------------
 
+# set -euo pipefail
+set -eo pipefail
+# set -o pipefail
 set -x
 
 # SDK Version
@@ -152,7 +155,13 @@ build_AWSRelease_bitcode()
     cd $BUILD_FOLDER
 
     # Cleanup
-    rm -r ./*
+    if [ -z "$( ls -A . )" ]; then
+        echo "$BUILD_FOLDER empty"
+    else
+        echo "Cleanup $BUILD_FOLDER"
+        rm -r ./*
+    fi
+
 
 	export SDK=$2
 
@@ -216,7 +225,12 @@ build_AWSDebug_bitcode()
     cd $BUILD_FOLDER
 
     # Cleanup
-    rm -r ./*
+    if [ -z "$( ls -A . )" ]; then
+        echo "$BUILD_FOLDER empty"
+    else
+        echo "Cleanup $BUILD_FOLDER"
+        rm -r ./*
+    fi
 
 	export SDK=$2
 
@@ -273,7 +287,12 @@ build_AWSRelease_Simulator_bitcode()
     cd $BUILD_FOLDER
 
     # Cleanup
-    rm -r ./*
+    if [ -z "$( ls -A . )" ]; then
+        echo "$BUILD_FOLDER empty"
+    else
+        echo "Cleanup $BUILD_FOLDER"
+        rm -r ./*
+    fi
 
     export SDK=$2
 
@@ -340,7 +359,12 @@ build_AWSDebug_Simulator_bitcode()
     cd $BUILD_FOLDER
 
     # Cleanup
-    rm -r ./*
+    if [ -z "$( ls -A . )" ]; then
+        echo "$BUILD_FOLDER empty"
+    else
+        echo "Cleanup $BUILD_FOLDER"
+        rm -r ./*
+    fi
 
     export SDK=$2
 
@@ -520,7 +544,7 @@ zip -r zipOutput/AWSSDKCPP.zip AWSSDKCPP
 mv AWSSDKCPP output
 echo "-- create openssl curl zip file --"
 rm zipOutput/libcurl.zip
-cd openssl_curl_for_ios_android.20170105
+cd openssl_curl
 mv output libcurl
 zip -r ../zipOutput/libcurl.zip libcurl
 mv libcurl output
