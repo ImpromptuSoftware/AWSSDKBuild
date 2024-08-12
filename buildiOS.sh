@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# set -euo pipefail
+set -eo pipefail
+# set -o pipefail
+# set -x
+
 # Update submodules
 echo "-- Updating submodules --"
 # git submodule update --init --recursive
@@ -26,7 +31,7 @@ cd ..
 # AWSSDKCPP build
 
 # Based on build scripts from the following:
-# https://github.com/aws/aws-sdk-cpp/issues/340 
+# https://github.com/aws/aws-sdk-cpp/issues/340
 # https://github.com/mologie/libtomcrypt-ios
 # http://stackoverflow.com/a/27161949/5148626
 
