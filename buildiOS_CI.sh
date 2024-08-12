@@ -1,6 +1,8 @@
 #!/bin/bash
 
-set -euo pipefail
+# set -euo pipefail
+set -eo pipefail
+# set -o pipefail
 set -x
 
 ## Openssl_curl done previously
