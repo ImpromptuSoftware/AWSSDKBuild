@@ -144,6 +144,7 @@ aggregate_release_libs() {
                             "libaws-cpp-sdk-lambda"
 							"libaws-cpp-sdk-apigateway"
 							"libaws-cpp-sdk-s3"
+							"libaws-cpp-sdk-sts"
 							"libaws-cpp-sdk-identity-management"
 							"libaws-c-auth"
 							"libaws-c-cal"
@@ -154,6 +155,7 @@ aggregate_release_libs() {
 							"libaws-c-io"
 							"libaws-c-mqtt"
 							"libaws-c-s3"
+							"libaws-c-sdkutils"
 							"libaws-crt-cpp"
 							"libaws-checksums"
                             )
@@ -165,9 +167,9 @@ aggregate_release_libs() {
         echo "--------- Aggregating $LIBNAME ---------"
         xcrun -sdk iphoneos lipo \
         "${WORKSPACE}/output/iOS/arm64/${DBGREL}/lib/${LIBNAME}" \
-        "${WORKSPACE}/output/iOS/armv7/${DBGREL}/lib/${LIBNAME}" \
-        "${WORKSPACE}/output/iOS/x86_64/${DBGREL}/lib/${LIBNAME}" \
         -create -output ${AGG_OUTPUT_DIR}/lib/${LIBNAME}
+        # "${WORKSPACE}/output/iOS/armv7/${DBGREL}/lib/${LIBNAME}" \
+        # "${WORKSPACE}/output/iOS/x86_64/${DBGREL}/lib/${LIBNAME}" \
 
         # verify arch
         echo "- Running lipo info for $LIBNAME:"
@@ -186,7 +188,7 @@ aggregate_release_libs() {
 build_AWSRelease_bitcode "arm64" "${IPHONEOS_SDK}"
 
 ## Aggregate into a fat lib. Argument provided here is the output directory
-#aggregate_release_libs "${WORKSPACE}/output/iOS/fatlib/release"
+aggregate_release_libs "${WORKSPACE}/output/iOS/fatlib/release"
 
 echo "-- Initial AWSSDKCPP build complete --"
 
