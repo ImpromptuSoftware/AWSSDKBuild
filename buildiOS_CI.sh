@@ -188,7 +188,7 @@ aggregate_release_libs() {
 build_AWSRelease_bitcode "arm64" "${IPHONEOS_SDK}"
 
 ## Aggregate into a fat lib. Argument provided here is the output directory
-# aggregate_release_libs "${WORKSPACE}/output/iOS/fatlib/release"
+aggregate_release_libs "${WORKSPACE}/output/iOS/fatlib/release"
 
 echo "-- Initial AWSSDKCPP build complete --"
 
