@@ -34,11 +34,12 @@ cmake ^
 	-DBUILD_ONLY="kinesis;cognito-identity;cognito-sync;lambda;pinpoint;s3;apigateway;identity-management" ^
 	-DBUILD_SHARED_LIBS=0 ^
 	-DFORCE_SHARED_CRT=0 ^
+	-DCMAKE_CXX_STANDARD=17 ^
+	-DCPP_STANDARD=17 ^
 	-DCMAKE_INSTALL_BINDIR=%outputPath%/%buildType%/%winType%/bin ^
 	-DCMAKE_INSTALL_LIBDIR=%outputPath%/%buildType%/%winType%/lib ^
 	-DCMAKE_INSTALL_INCLUDEDIR=%outputPath%/%buildType%/%winType%/include ^
 	-DENABLE_TESTING=0 ^
-	-DNDK_DIR=%androidNDKPath% ^
 	-DCMAKE_INSTALL_PREFIX=%outputPath%/%buildType%/%winType%
 
 msbuild INSTALL.vcxproj /p:Configuration=%buildType%
