@@ -107,7 +107,11 @@ build_AWSRelease_bitcode()
 		-DCURL_INCLUDE_DIR=${WORKSPACE}/openssl_curl/libcurl-8.6.0-openssl-3.0.13-nghttp2-1.60.0/include \
 		-DCURL_LIBRARY=${WORKSPACE}/openssl_curl/libcurl-8.6.0-openssl-3.0.13-nghttp2-1.60.0/lib/iOS/libcurl.a \
 		-DCMAKE_IOS_DEPLOYMENT_TARGET=“12” \
-		-DUSE_OPENSSL=ON \
+		-DUSE_OPENSSL=Yes \
+        -DENABLE_OPENSSL_ENCRYPTION=Yes \
+        -DOPENSSL_CRYPTO_LIBRARY=${WORKSPACE}/openssl_curl/libcurl-8.6.0-openssl-3.0.13-nghttp2-1.60.0/lib/iOS/libcrypto.a \
+        -DOPENSSL_SSL_LIBRARY=${WORKSPACE}/openssl_curl/libcurl-8.6.0-openssl-3.0.13-nghttp2-1.60.0/lib/iOS/libssl.a \
+        -DOPENSSL_INCLUDE_DIR=${WORKSPACE}/openssl_curl/libcurl-8.6.0-openssl-3.0.13-nghttp2-1.60.0/include \
         $WORKSPACE/aws-sdk-cpp
     make -j 8
     make install
